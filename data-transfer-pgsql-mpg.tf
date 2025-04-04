@@ -61,7 +61,7 @@ resource "yandex_mdb_postgresql_cluster" "mpg-cluster" {
   name               = "mpg-cluster"
   environment        = "PRODUCTION"
   network_id         = yandex_vpc_network.network.id
-  security_group_ids = [yandex_vpc_security_group.security-group.id]
+  security_group_ids = [yandex_vpc_security_group.security-group-mpg.id]
 
   config {
     version = local.target_pgsql_version
@@ -82,6 +82,7 @@ resource "yandex_mdb_postgresql_cluster" "mpg-cluster" {
 resource "yandex_mdb_postgresql_database" "mpg-db" {
   cluster_id = yandex_mdb_postgresql_cluster.mpg-cluster.id
   name       = local.source_db_name
+  owner      = yandex_mdb_postgresql_user.mpg-user.name
 
   # Set the names of PostgreSQL extensions using a cycle.
   dynamic "extension" {
@@ -97,17 +98,13 @@ resource "yandex_mdb_postgresql_user" "mpg-user" {
   cluster_id = yandex_mdb_postgresql_cluster.mpg-cluster.id
   name       = local.target_user
   password   = local.target_password
-  permission {
-    database_name = local.source_db_name
-  }
-  grants = ["ALL"]
 }
 
 resource "yandex_datatransfer_endpoint" "pgsql-source" {
   description = "Source endpoint for PostgreSQL cluster"
   name        = "pgsql-source"
   settings {
-    pgsql_source {
+    postgres_source {
       connection {
         on_premise {
           hosts = [local.source_host]
@@ -127,7 +124,7 @@ resource "yandex_datatransfer_endpoint" "mpg-target" {
   description = "Target endpoint for the Managed Service for PostgreSQL cluster"
   name        = "mpg-target"
   settings {
-    target {
+    postgres_target {
       connection {
         mdb_cluster_id = yandex_mdb_postgresql_cluster.mpg-cluster.id
       }
