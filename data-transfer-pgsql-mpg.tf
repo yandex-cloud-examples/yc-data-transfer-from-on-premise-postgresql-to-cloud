@@ -1,7 +1,7 @@
 # Infrastructure for the Yandex Cloud Managed Service for PostgreSQL cluster and Data Transfer.
 #
-# RU: https://cloud.yandex.ru/docs/managed-postgresql/tutorials/data-migration
-# EN: https://cloud.yandex.com/en/docs/managed-postgresql/tutorials/data-migration
+# RU: https://yandex.cloud/ru/docs/managed-postgresql/tutorials/data-migration
+# EN: https://yandex.cloud/en/docs/managed-postgresql/tutorials/data-migration
 
 # Specify the source and target clusters settings.
 locals {
@@ -12,7 +12,7 @@ locals {
   source_host    = ""   # Set the source cluster master host IP address or FQDN.
   source_port    = 6432 # Set the source cluster port number that Data Transfer will use for connections.
   # Target cluster settings:
-  target_pgsql_version = "" # Set PostgreSQL version. It must match the version of the source cluster.
+  target_pgsql_version = "" # Set PostgreSQL version. It must be the same or higher than the source cluster.
   target_user          = "" # Set the target cluster username.
   target_password      = "" # Set the target cluster password.
 }
@@ -52,7 +52,7 @@ resource "yandex_vpc_security_group_rule" "rule-cluster" {
   direction              = "ingress"
   description            = "Allow connections to the cluster from the Internet"
   protocol               = "TCP"
-  port                   = local.source_port
+  port                   = 6432
   v4_cidr_blocks         = ["0.0.0.0/0"]
 }
 
