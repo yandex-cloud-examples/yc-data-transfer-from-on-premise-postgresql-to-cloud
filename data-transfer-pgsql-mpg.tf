@@ -12,7 +12,7 @@ locals {
   source_host    = ""   # Set the source cluster master host IP address or FQDN.
   source_port    = 6432 # Set the source cluster port number that Data Transfer will use for connections.
   # Target cluster settings:
-  target_pgsql_version = "" # Set PostgreSQL version. It must be the same or higher than the source cluster.
+  target_pgsql_version = "" # Set the PostgreSQL version. It must be the same or higher than the source cluster.
   target_user          = "" # Set the target cluster username.
   target_password      = "" # Set the target cluster password.
 }
